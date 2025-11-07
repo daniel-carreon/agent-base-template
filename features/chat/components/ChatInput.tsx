@@ -25,14 +25,14 @@ export function ChatInput({ input, isLoading, onInputChange, onSubmit }: ChatInp
     // Submit on Enter (without Shift)
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (input.trim() && !isLoading) {
+      if (input?.trim() && !isLoading) {
         onSubmit(e as unknown as FormEvent)
       }
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="border-t border-white/10 p-6 bg-black/20 backdrop-blur-xl">
+    <form onSubmit={onSubmit} className="border-t border-[var(--glass-border)] p-6 bg-[var(--glass-bg)] backdrop-blur-xl">
       <div className="max-w-4xl mx-auto flex gap-4 items-end">
         <textarea
           ref={textareaRef}
@@ -41,13 +41,12 @@ export function ChatInput({ input, isLoading, onInputChange, onSubmit }: ChatInp
           onKeyDown={handleKeyDown}
           className="input-glass flex-1 min-h-[56px] max-h-[200px]"
           placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
-          disabled={isLoading}
           rows={1}
         />
 
         <button
           type="submit"
-          disabled={!input.trim() || isLoading}
+          disabled={!input?.trim() || isLoading}
           className="btn-primary h-[56px] px-8 shrink-0"
         >
           {isLoading ? (
@@ -62,7 +61,7 @@ export function ChatInput({ input, isLoading, onInputChange, onSubmit }: ChatInp
 
       <div className="max-w-4xl mx-auto mt-3 flex items-center justify-between text-xs text-white/30">
         <span>Press Enter to send, Shift+Enter for new line</span>
-        {input.length > 0 && (
+        {input && input.length > 0 && (
           <span>{input.length} characters</span>
         )}
       </div>

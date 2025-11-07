@@ -43,7 +43,7 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!input.trim() || isLoading) return
+    if (!input?.trim() || isLoading) return
 
     try {
       // TEMPORARILY DISABLED FOR TESTING - Save user message to Supabase first
@@ -73,7 +73,7 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
       <MessageList messages={messages} isLoading={isLoading} />
 
       <ChatInput
-        input={input}
+        input={input || ''}
         isLoading={isLoading}
         onInputChange={handleInputChange}
         onSubmit={handleSubmit}

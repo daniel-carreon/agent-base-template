@@ -277,7 +277,8 @@
      ============================================ */
 
   .sidebar {
-    @apply bg-black/40 backdrop-blur-xl border-r border-[var(--glass-border)] h-full overflow-y-auto;
+    @apply backdrop-blur-xl border-r border-[var(--glass-border)] h-full overflow-y-auto;
+    background: var(--glass-bg-strong);
   }
 
   /* ============================================

@@ -22,7 +22,7 @@ function ClientLayoutContent({ children, userEmail, activeConversationId }: Clie
         } overflow-hidden`}
       >
         <div className="w-80">
-          <ConversationList activeConversationId={activeConversationId} />
+          <ConversationList activeConversationId={activeConversationId} userEmail={userEmail} />
         </div>
       </aside>
 

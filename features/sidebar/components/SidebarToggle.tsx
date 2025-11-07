@@ -1,5 +1,6 @@
 'use client'
 
+import { Menu } from 'lucide-react'
 import { useSidebar } from '../context/SidebarContext'
 
 export function SidebarToggle() {
@@ -8,29 +9,11 @@ export function SidebarToggle() {
   return (
     <button
       onClick={toggle}
-      className="glass-hover p-2 flex items-center justify-center transition-all duration-200"
+      className="glass-hover p-2.5 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-white/10"
       aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
+      title={isOpen ? 'Close sidebar' : 'Open sidebar'}
     >
-      <div className="w-6 h-5 flex flex-col justify-between">
-        {/* Top line */}
-        <span
-          className={`block h-0.5 bg-[var(--text-primary)] transition-all duration-300 ease-in-out ${
-            isOpen ? 'rotate-45 translate-y-2' : 'rotate-0'
-          }`}
-        />
-        {/* Middle line */}
-        <span
-          className={`block h-0.5 bg-[var(--text-primary)] transition-all duration-300 ease-in-out ${
-            isOpen ? 'opacity-0' : 'opacity-100'
-          }`}
-        />
-        {/* Bottom line */}
-        <span
-          className={`block h-0.5 bg-[var(--text-primary)] transition-all duration-300 ease-in-out ${
-            isOpen ? '-rotate-45 -translate-y-2' : 'rotate-0'
-          }`}
-        />
-      </div>
+      <Menu className="w-5 h-5 text-[var(--text-primary)]" strokeWidth={2.5} />
     </button>
   )
 }
