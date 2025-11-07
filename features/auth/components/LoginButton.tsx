@@ -28,12 +28,12 @@ export function LoginButton() {
     <button
       onClick={handleLogin}
       disabled={loading}
-      className="glass-hover px-8 py-4 text-white font-medium text-lg flex items-center justify-center gap-3 min-w-[280px] group"
+      className="glass-hover px-8 py-4 text-[var(--text-primary)] font-medium text-lg flex items-center justify-center gap-3 min-w-[280px] group"
     >
       {loading ? (
         <>
           <Spinner size="md" />
-          <span className="text-white/70">Redirecting...</span>
+          <span className="text-[var(--text-secondary)]">Redirecting...</span>
         </>
       ) : (
         <>
@@ -55,7 +55,7 @@ export function LoginButton() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          <span className="group-hover:text-white transition-colors">
+          <span className="group-hover:text-[var(--text-primary)] transition-colors">
             Sign in with Google
           </span>
         </>

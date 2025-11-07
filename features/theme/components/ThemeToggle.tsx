@@ -18,7 +18,7 @@ export function ThemeToggle() {
       ) : (
         <Moon className="w-4 h-4 text-indigo-400" strokeWidth={2} />
       )}
-      <span className="text-sm text-white/70 hidden md:inline">
+      <span className="text-sm text-[var(--text-secondary)] hidden md:inline">
         {theme === 'dark' ? 'Light' : 'Dark'}
       </span>
     </button>

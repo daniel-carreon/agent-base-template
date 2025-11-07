@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { Message } from './Message'
 import { TypingIndicator } from '@/shared/components/TypingIndicator'
-import type { Message as MessageType } from 'ai'
+import type { UIMessage as MessageType } from '@ai-sdk/react'
 
 interface MessageListProps {
   messages: MessageType[]
@@ -38,9 +38,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
 
   return (
     <div className="flex-1 overflow-y-auto p-6 space-y-6">
-      {messages
-        .filter((m) => m.role !== 'data')
-        .map((message, index) => {
+      {messages.map((message, index) => {
           // Extract thinking from experimental_providerMetadata (Anthropic extended thinking)
           const thinking = (message as any).experimental_providerMetadata?.anthropic?.thinking
 
@@ -48,9 +46,9 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
             <Message
               key={message.id || index}
               role={message.role as 'user' | 'assistant' | 'system'}
-              content={message.content}
+              content={(message as any).content}
               thinking={thinking}
-              timestamp={message.createdAt?.toISOString()}
+              timestamp={(message as any).createdAt?.toISOString()}
             />
           )
         })}

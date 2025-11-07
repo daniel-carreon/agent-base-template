@@ -22,7 +22,7 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold text-gradient">
             Welcome Back
           </h1>
-          <p className="text-white/60 text-lg">
+          <p className="text-[var(--text-secondary)] text-lg">
             Sign in to continue your conversations
           </p>
         </div>
@@ -34,22 +34,22 @@ export default function LoginPage() {
         <div className="flex flex-col items-center gap-4">
           <LoginButton />
 
-          <p className="text-white/40 text-sm text-center max-w-xs">
+          <p className="text-[var(--text-muted)] text-sm text-center max-w-xs">
             By signing in, you agree to our Terms of Service and Privacy Policy
           </p>
         </div>
 
         {/* Features */}
         <div className="pt-8 space-y-3">
-          <div className="flex items-center gap-3 text-white/50 text-sm">
+          <div className="flex items-center gap-3 text-[var(--text-muted)] text-sm">
             <div className="w-2 h-2 rounded-full bg-green-500" />
             <span>Secure authentication with Google</span>
           </div>
-          <div className="flex items-center gap-3 text-white/50 text-sm">
+          <div className="flex items-center gap-3 text-[var(--text-muted)] text-sm">
             <div className="w-2 h-2 rounded-full bg-blue-500" />
             <span>AI-powered conversations</span>
           </div>
-          <div className="flex items-center gap-3 text-white/50 text-sm">
+          <div className="flex items-center gap-3 text-[var(--text-muted)] text-sm">
             <div className="w-2 h-2 rounded-full bg-purple-500" />
             <span>Persistent conversation history</span>
           </div>

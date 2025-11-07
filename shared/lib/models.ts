@@ -3,7 +3,7 @@ import { openai } from '@ai-sdk/openai'
 import { google } from '@ai-sdk/google'
 import { openrouter } from '@/shared/lib/openrouter'
 import { getModelById, DEFAULT_MODEL_ID } from '@/config/models'
-import type { LanguageModelV1 } from 'ai'
+import type { LanguageModel } from 'ai'
 
 /**
  * Get AI SDK model instance based on model ID
@@ -13,7 +13,7 @@ import type { LanguageModelV1 } from 'ai'
  * @param modelId - The model ID to instantiate
  * @returns Language model instance
  */
-export function getModelInstance(modelId: string): LanguageModelV1 {
+export function getModelInstance(modelId: string): LanguageModel {
   const modelInfo = getModelById(modelId)
 
   if (!modelInfo) {
@@ -43,7 +43,7 @@ export function getModelInstance(modelId: string): LanguageModelV1 {
 /**
  * Get default model instance
  */
-export function getDefaultModel(): LanguageModelV1 {
+export function getDefaultModel(): LanguageModel {
   return getModelInstance(DEFAULT_MODEL_ID)
 }
 

@@ -192,7 +192,7 @@ function ModelOption({ model, isSelected, onSelect }: ModelOptionProps) {
           <div className="flex items-center gap-2 mb-1">
             <span
               className={`font-medium text-sm ${
-                isSelected ? 'text-white' : 'text-[var(--text-primary)]'
+                isSelected ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]'
               }`}
             >
               {model.name}

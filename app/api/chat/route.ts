@@ -66,8 +66,8 @@ export async function POST(req: Request) {
               role: 'assistant',
               content: text,
               model_used: modelId,
-              tokens_input: usage.promptTokens,
-              tokens_output: usage.completionTokens,
+              tokens_input: usage.inputTokens,
+              tokens_output: usage.outputTokens,
             })
 
             // Check if this is the first message pair (user + assistant)
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
       },
     })
 
-    return result.toDataStreamResponse()
+    return result.toTextStreamResponse()
   } catch (error) {
     console.error('Chat endpoint error:', error)
     return Response.json(

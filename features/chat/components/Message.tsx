@@ -26,11 +26,8 @@ export function Message({ role, content, thinking, timestamp }: MessageProps) {
       >
         {!isUser && (
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white dark:text-white" strokeWidth={2.5} />
-              </div>
-              <span className="text-[var(--text-secondary)] text-sm font-medium">Agente Base</span>
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <Bot className="w-4 h-4 text-white" strokeWidth={2.5} />
             </div>
 
             {/* Copy Button - shows on hover */}

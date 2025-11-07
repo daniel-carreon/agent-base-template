@@ -231,7 +231,7 @@
      ============================================ */
 
   .input-glass {
-    @apply glass px-4 py-3 text-white placeholder-[var(--text-muted)]
+    @apply glass px-4 py-3 text-[var(--text-primary)] placeholder-[var(--text-muted)]
            focus:outline-none focus:border-[var(--glass-border-hover)]
            focus:bg-[var(--glass-bg-hover)] transition-all resize-none;
   }
@@ -245,7 +245,7 @@
      ============================================ */
 
   .btn-primary {
-    @apply glass-hover px-6 py-3 font-medium text-white flex items-center justify-center gap-2;
+    @apply glass-hover px-6 py-3 font-medium text-[var(--text-primary)] flex items-center justify-center gap-2;
   }
 
   .btn-primary:disabled {
@@ -253,7 +253,7 @@
   }
 
   .btn-secondary {
-    @apply glass px-4 py-2 font-medium text-[var(--text-secondary)] hover:text-white transition-colors;
+    @apply glass px-4 py-2 font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors;
   }
 
   .btn-icon {

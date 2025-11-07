@@ -219,7 +219,7 @@ export function ConversationList({ activeConversationId }: ConversationListProps
         <div className="p-4 border-b border-white/10 glass-strong">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="text-white/70 text-sm font-medium">
+              <span className="text-[var(--text-secondary)] text-sm font-medium">
                 {selectedIds.size} seleccionadas
               </span>
               <button
@@ -230,7 +230,7 @@ export function ConversationList({ activeConversationId }: ConversationListProps
               </button>
               <button
                 onClick={handleDeselectAll}
-                className="text-xs text-white/50 hover:underline"
+                className="text-xs text-[var(--text-muted)] hover:underline"
               >
                 Ninguna
               </button>
@@ -270,8 +270,8 @@ export function ConversationList({ activeConversationId }: ConversationListProps
           </div>
         ) : conversations.length === 0 ? (
           <div className="text-center py-12 px-4">
-            <p className="text-white/40 text-sm">No conversations yet</p>
-            <p className="text-white/30 text-xs mt-2">
+            <p className="text-[var(--text-muted)] text-sm">No conversations yet</p>
+            <p className="text-[var(--text-disabled)] text-xs mt-2">
               Click &quot;New Chat&quot; to start
             </p>
           </div>
@@ -314,7 +314,7 @@ export function ConversationList({ activeConversationId }: ConversationListProps
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="flex-1 px-2 py-1 text-sm bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded text-white focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
+                        className="flex-1 px-2 py-1 text-sm bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
                         disabled={isSavingTitle}
                       />
                       <button
@@ -335,7 +335,7 @@ export function ConversationList({ activeConversationId }: ConversationListProps
                         className="p-1 glass-hover rounded"
                         title="Cancel (Esc)"
                       >
-                        <X className="w-3.5 h-3.5 text-white/40" />
+                        <X className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                       </button>
                     </div>
                   ) : (
@@ -344,10 +344,10 @@ export function ConversationList({ activeConversationId }: ConversationListProps
                       onClick={() => router.push(`/chat/${conversation.id}`)}
                       className="cursor-pointer"
                     >
-                      <h3 className="text-white font-medium truncate text-sm">
+                      <h3 className="text-[var(--text-primary)] font-medium truncate text-sm">
                         {conversation.title}
                       </h3>
-                      <p className="text-white/40 text-xs mt-1">
+                      <p className="text-[var(--text-muted)] text-xs mt-1">
                         {formatDistanceToNow(new Date(conversation.updated_at), {
                           addSuffix: true,
                         })}
@@ -371,7 +371,7 @@ export function ConversationList({ activeConversationId }: ConversationListProps
                         className={`w-4 h-4 ${
                           conversation.is_favorite
                             ? 'fill-yellow-500 text-yellow-500'
-                            : 'text-white/40'
+                            : 'text-[var(--text-muted)]'
                         }`}
                         strokeWidth={2}
                       />
@@ -383,7 +383,7 @@ export function ConversationList({ activeConversationId }: ConversationListProps
                       className="opacity-0 group-hover:opacity-100 transition-opacity glass-hover p-1.5 w-7 h-7"
                       title="Edit title"
                     >
-                      <Edit2 className="w-3.5 h-3.5 text-white/40" />
+                      <Edit2 className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                     </button>
 
                     {/* Delete Button */}
