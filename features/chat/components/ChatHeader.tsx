@@ -1,6 +1,5 @@
 'use client'
 
-import { ModelSelector } from './ModelSelector'
 import { SidebarToggle } from '@/features/sidebar/components/SidebarToggle'
 
 interface ChatHeaderProps {
@@ -14,9 +13,6 @@ export function ChatHeader({ userEmail }: ChatHeaderProps) {
         <div className="flex items-center gap-4">
           {/* Sidebar Toggle */}
           <SidebarToggle />
-
-          {/* Model Selector */}
-          <ModelSelector />
         </div>
       </div>
     </header>
