@@ -1,6 +1,7 @@
 'use client'
 
 import { Spinner } from '@/shared/components/Spinner'
+import { ModelSelector } from './ModelSelector'
 import { FormEvent, KeyboardEvent, useRef, useEffect } from 'react'
 
 interface ChatInputProps {
@@ -59,11 +60,15 @@ export function ChatInput({ input, isLoading, onInputChange, onSubmit }: ChatInp
         </button>
       </div>
 
-      <div className="max-w-4xl mx-auto mt-3 flex items-center justify-between text-xs text-white/30">
-        <span>Press Enter to send, Shift+Enter for new line</span>
-        {input && input.length > 0 && (
-          <span>{input.length} characters</span>
-        )}
+      {/* Model Selector - Below Input */}
+      <div className="max-w-4xl mx-auto mt-3 flex items-center justify-between">
+        <ModelSelector />
+        <div className="flex items-center gap-4 text-xs text-white/30">
+          <span>Press Enter to send, Shift+Enter for new line</span>
+          {input && input.length > 0 && (
+            <span>{input.length} characters</span>
+          )}
+        </div>
       </div>
     </form>
   )

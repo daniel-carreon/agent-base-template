@@ -3,8 +3,10 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
-import { Star, Trash2, X, Edit2, Check } from 'lucide-react'
+import { Star, Trash2, X, Edit2, Check, MoreVertical } from 'lucide-react'
 import { Spinner } from '@/shared/components/Spinner'
+import { ThemeToggle } from '@/features/theme/components/ThemeToggle'
+import { UserMenu } from '@/features/auth/components/UserMenu'
 import {
   getConversations,
   createConversation,
@@ -17,9 +19,10 @@ import type { Conversation } from '../types/conversation'
 
 interface ConversationListProps {
   activeConversationId?: string
+  userEmail: string
 }
 
-export function ConversationList({ activeConversationId }: ConversationListProps) {
+export function ConversationList({ activeConversationId, userEmail }: ConversationListProps) {
   const router = useRouter()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
@@ -30,7 +33,10 @@ export function ConversationList({ activeConversationId }: ConversationListProps
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [isSavingTitle, setIsSavingTitle] = useState(false)
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  const [showConversations, setShowConversations] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const CONVERSATION_LIMIT = 12
 
   useEffect(() => {
     loadConversations()
@@ -192,7 +198,8 @@ export function ConversationList({ activeConversationId }: ConversationListProps
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-6 border-b border-white/10 space-y-3">
+        {/* New Conversation Button */}
         <button
           onClick={handleNewConversation}
           disabled={creating}
@@ -211,6 +218,33 @@ export function ConversationList({ activeConversationId }: ConversationListProps
               <span>New Chat</span>
             </>
           )}
+        </button>
+
+        {/* Toggle Conversations Button */}
+        <button
+          onClick={() => setShowConversations(!showConversations)}
+          className="w-full flex items-center justify-between p-3 text-left text-[var(--text-muted)] hover:bg-white/5 hover:text-[var(--text-primary)] rounded-lg transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+            </svg>
+            <span className="font-medium">
+              {showConversations ? 'Hide conversations' : 'View conversations'}
+            </span>
+          </div>
+
+          {/* Arrow Indicator */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className={`w-4 h-4 transition-transform ${showConversations ? 'rotate-180' : ''}`}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
         </button>
       </div>
 
@@ -262,21 +296,23 @@ export function ConversationList({ activeConversationId }: ConversationListProps
         </div>
       )}
 
-      {/* Conversations List */}
+      {/* Conversations List - Spacer always present to push controls to bottom */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Spinner size="lg" />
-          </div>
-        ) : conversations.length === 0 ? (
-          <div className="text-center py-12 px-4">
-            <p className="text-[var(--text-muted)] text-sm">No conversations yet</p>
-            <p className="text-[var(--text-disabled)] text-xs mt-2">
-              Click &quot;New Chat&quot; to start
-            </p>
-          </div>
-        ) : (
-          sortedConversations.map((conversation) => {
+        {showConversations && (
+          loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Spinner size="lg" />
+            </div>
+          ) : conversations.length === 0 ? (
+            <div className="text-center py-12 px-4">
+              <p className="text-[var(--text-muted)] text-sm">No conversations yet</p>
+              <p className="text-[var(--text-disabled)] text-xs mt-2">
+                Click &quot;New Chat&quot; to start
+              </p>
+            </div>
+          ) : (
+            <>
+              {sortedConversations.slice(0, CONVERSATION_LIMIT).map((conversation) => {
             const isActive = conversation.id === activeConversationId
             const isSelected = selectedIds.has(conversation.id)
 
@@ -356,67 +392,125 @@ export function ConversationList({ activeConversationId }: ConversationListProps
                   )}
                 </div>
 
-                {/* Action Buttons - only show if not editing */}
+                {/* Kebab Menu - only show if not editing */}
                 {editingId !== conversation.id && (
-                  <div className="absolute right-3 top-3 flex items-center gap-1">
-                    {/* Favorite Button */}
-                    <button
-                      onClick={(e) => handleToggleFavorite(conversation, e)}
-                      className={`glass-hover p-1.5 w-7 h-7 ${
-                        conversation.is_favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      } transition-opacity`}
-                      title={conversation.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      <Star
-                        className={`w-4 h-4 ${
-                          conversation.is_favorite
-                            ? 'fill-yellow-500 text-yellow-500'
-                            : 'text-[var(--text-muted)]'
-                        }`}
-                        strokeWidth={2}
-                      />
-                    </button>
+                  <div className="absolute right-3 top-3">
+                    {/* Favorite indicator - always visible if favorited */}
+                    {conversation.is_favorite && (
+                      <Star className="w-4 h-4 fill-yellow-500 text-yellow-500 absolute -left-6 top-1" />
+                    )}
 
-                    {/* Edit Button */}
-                    <button
-                      onClick={(e) => handleStartEdit(conversation, e)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity glass-hover p-1.5 w-7 h-7"
-                      title="Edit title"
-                    >
-                      <Edit2 className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                    </button>
+                    {/* Kebab Menu Button */}
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setOpenMenuId(openMenuId === conversation.id ? null : conversation.id)
+                        }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity glass-hover p-1.5 w-7 h-7"
+                        title="More options"
+                      >
+                        <MoreVertical className="w-4 h-4 text-[var(--text-muted)]" />
+                      </button>
 
-                    {/* Delete Button */}
-                    <button
-                      onClick={(e) => handleDeleteConversation(conversation.id, e)}
-                      disabled={deletingId === conversation.id}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity glass-hover p-1.5 w-7 h-7"
-                      title="Delete conversation"
-                    >
-                      {deletingId === conversation.id ? (
-                        <Spinner size="sm" />
-                      ) : (
-                        <svg
-                          className="w-4 h-4 text-red-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      {/* Dropdown Menu */}
+                      {openMenuId === conversation.id && (
+                        <>
+                          {/* Backdrop to close menu */}
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setOpenMenuId(null)
+                            }}
                           />
-                        </svg>
+
+                          {/* Menu Items */}
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-lg shadow-xl z-20 overflow-hidden">
+                            {/* Favorite */}
+                            <button
+                              onClick={(e) => {
+                                handleToggleFavorite(conversation, e)
+                                setOpenMenuId(null)
+                              }}
+                              className="w-full px-4 py-2.5 text-left hover:bg-white/5 transition-colors flex items-center gap-3 text-sm"
+                            >
+                              <Star
+                                className={`w-4 h-4 ${
+                                  conversation.is_favorite
+                                    ? 'fill-yellow-500 text-yellow-500'
+                                    : 'text-[var(--text-muted)]'
+                                }`}
+                              />
+                              <span className="text-[var(--text-primary)]">
+                                {conversation.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                              </span>
+                            </button>
+
+                            {/* Edit */}
+                            <button
+                              onClick={(e) => {
+                                handleStartEdit(conversation, e)
+                                setOpenMenuId(null)
+                              }}
+                              className="w-full px-4 py-2.5 text-left hover:bg-white/5 transition-colors flex items-center gap-3 text-sm"
+                            >
+                              <Edit2 className="w-4 h-4 text-[var(--text-muted)]" />
+                              <span className="text-[var(--text-primary)]">Edit title</span>
+                            </button>
+
+                            {/* Delete */}
+                            <button
+                              onClick={(e) => {
+                                handleDeleteConversation(conversation.id, e)
+                                setOpenMenuId(null)
+                              }}
+                              disabled={deletingId === conversation.id}
+                              className="w-full px-4 py-2.5 text-left hover:bg-red-500/10 transition-colors flex items-center gap-3 text-sm border-t border-white/5"
+                            >
+                              {deletingId === conversation.id ? (
+                                <>
+                                  <Spinner size="sm" />
+                                  <span className="text-red-400">Deleting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Trash2 className="w-4 h-4 text-red-400" />
+                                  <span className="text-red-400">Delete conversation</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </>
                       )}
-                    </button>
+                    </div>
                   </div>
                 )}
               </div>
             )
-          })
+              })}
+
+              {/* Show "View all" button if there are more conversations */}
+              {sortedConversations.length > CONVERSATION_LIMIT && (
+                <button
+                  onClick={() => router.push('/chat/history')}
+                  className="w-full text-center p-3 text-sm text-[var(--accent-primary)] hover:bg-white/5 rounded-lg transition-colors border border-white/10"
+                >
+                  View all conversations ({conversations.length})
+                </button>
+              )}
+            </>
+          )
         )}
+      </div>
+
+      {/* Bottom Controls: User Menu (left) & Theme Toggle (right) */}
+      <div className="border-t border-white/10 px-5 py-4 flex items-center justify-between flex-shrink-0">
+        {/* User Menu - Bottom Left */}
+        <UserMenu userEmail={userEmail} />
+
+        {/* Theme Toggle - Bottom Right */}
+        <ThemeToggle />
       </div>
     </div>
   )

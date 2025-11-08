@@ -42,11 +42,23 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
           // Extract thinking from experimental_providerMetadata (Anthropic extended thinking)
           const thinking = (message as any).experimental_providerMetadata?.anthropic?.thinking
 
+          // AI SDK 5.0: Extract content from parts array
+          let content = ''
+          if ((message as any).parts && Array.isArray((message as any).parts)) {
+            content = (message as any).parts
+              .filter((part: any) => part.type === 'text')
+              .map((part: any) => part.text)
+              .join('')
+          } else if ((message as any).content) {
+            // Fallback for old format
+            content = (message as any).content
+          }
+
           return (
             <Message
               key={message.id || index}
               role={message.role as 'user' | 'assistant' | 'system'}
-              content={(message as any).content}
+              content={content}
               thinking={thinking}
               timestamp={(message as any).createdAt?.toISOString()}
             />

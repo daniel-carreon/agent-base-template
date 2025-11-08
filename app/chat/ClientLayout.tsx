@@ -21,7 +21,7 @@ function ClientLayoutContent({ children, userEmail, activeConversationId }: Clie
           isOpen ? 'w-80 translate-x-0' : 'w-0 -translate-x-full lg:translate-x-0 lg:w-0'
         } overflow-hidden`}
       >
-        <div className="w-80">
+        <div className="w-80 h-full">
           <ConversationList activeConversationId={activeConversationId} userEmail={userEmail} />
         </div>
       </aside>

@@ -15,6 +15,7 @@ interface ChatInterfaceProps {
 
 export function ChatInterface({ conversationId, initialMessages = [] }: ChatInterfaceProps) {
   const [selectedModelId, setSelectedModelId] = useState(DEFAULT_MODEL_ID)
+  const [input, setInput] = useState('')
 
   // Load selected model from localStorage
   useEffect(() => {
@@ -24,12 +25,11 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
     }
   }, [])
 
+  // AI SDK 5.0 modern pattern - no more handleInputChange from hook
   const {
     messages,
-    input,
-    handleInputChange,
-    handleSubmit: originalHandleSubmit,
-    isLoading,
+    sendMessage,
+    status,
     error,
   } = useChat({
     api: '/api/chat',
@@ -38,26 +38,36 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
       modelId: selectedModelId,
     },
     initialMessages,
-  } as any) as any
+  })
+
+  const isLoading = status === 'streaming' || status === 'submitted'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!input?.trim() || isLoading) return
 
+    const userMessage = input.trim()
+    setInput('') // Clear input immediately
+
     try {
       // TEMPORARILY DISABLED FOR TESTING - Save user message to Supabase first
       // await createMessage({
       //   conversation_id: conversationId,
       //   role: 'user',
-      //   content: input.trim(),
+      //   content: userMessage,
       // })
 
-      // Send to AI
-      await originalHandleSubmit(e)
+      // Send to AI using new sendMessage API (AI SDK 5.0)
+      sendMessage(userMessage)
     } catch (error) {
       console.error('Error submitting message:', error)
+      setInput(userMessage) // Restore input on error
     }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value)
   }
 
   return (
@@ -73,7 +83,7 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
       <MessageList messages={messages} isLoading={isLoading} />
 
       <ChatInput
-        input={input || ''}
+        input={input}
         isLoading={isLoading}
         onInputChange={handleInputChange}
         onSubmit={handleSubmit}
