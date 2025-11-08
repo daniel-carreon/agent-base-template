@@ -59,7 +59,7 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
       // })
 
       // Send to AI using new sendMessage API (AI SDK 5.0)
-      sendMessage(userMessage)
+      sendMessage({ text: userMessage })
     } catch (error) {
       console.error('Error submitting message:', error)
       setInput(userMessage) // Restore input on error
