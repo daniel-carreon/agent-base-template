@@ -33,7 +33,13 @@ export function useCustomChat() {
         content: text,
         timestamp: new Date(),
       }
-      setMessages((prev) => [...prev, userMessage])
+
+      // Update messages state and capture updated array
+      let updatedMessages: CustomMessage[] = []
+      setMessages((prev) => {
+        updatedMessages = [...prev, userMessage]
+        return updatedMessages
+      })
 
       // Prepare assistant message
       const assistantMessageId = `assistant-${Date.now()}`
@@ -41,13 +47,21 @@ export function useCustomChat() {
       let accumulatedReasoning = ''
 
       try {
+        // 🧠 Send FULL conversation history for context
+        const messagesToSend = updatedMessages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        }))
+
+        console.log('[useCustomChat] Sending', messagesToSend.length, 'messages for context')
+
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            messages: [{ role: 'user', content: text }],
+            messages: messagesToSend, // Send full history
             conversationId: options.conversationId,
             modelId: options.modelId,
           }),
