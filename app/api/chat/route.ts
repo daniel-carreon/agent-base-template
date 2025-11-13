@@ -33,43 +33,49 @@ export async function POST(req: Request) {
     console.log('[Chat API] Received messages:', messages.length, 'messages')
     console.log('[Chat API] First message:', JSON.stringify(messages[0], null, 2))
 
-    // 🔄 SIMPLE FIX: Solo enviar el último mensaje del usuario
-    // Esto evita problemas con historial corrupto
-    const lastUserMessage = messages.filter((m: any) => m.role === 'user').pop()
+    // 🧠 MEMORY: Sliding window de últimos 15 mensajes para mantener contexto
+    const MEMORY_WINDOW = 15
+    const recentMessages = messages.slice(-MEMORY_WINDOW)
 
+    console.log(`[Chat API] Using memory window: ${recentMessages.length} of ${messages.length} messages`)
+
+    // Convert messages to standard format { role, content }
+    const convertedMessages = recentMessages.map((msg: any) => {
+      // Extract text content from parts or direct content
+      let content = ''
+      if (msg.parts && Array.isArray(msg.parts)) {
+        content = msg.parts
+          .filter((part: any) => part.type === 'text')
+          .map((part: any) => part.text)
+          .join('')
+      } else if (msg.content) {
+        content = msg.content
+      }
+
+      return {
+        role: msg.role,
+        content: content.trim(),
+      }
+    })
+
+    // Validate we have at least one user message
+    const lastUserMessage = convertedMessages.filter((m) => m.role === 'user').pop()
     if (!lastUserMessage) {
-      console.error('[Chat API] No user message found!')
+      console.error('[Chat API] No user message found in conversation!')
       return Response.json({ error: 'No user message' }, { status: 400 })
     }
 
-    // Extract text content
-    let content = ''
-    if (lastUserMessage.parts && Array.isArray(lastUserMessage.parts)) {
-      content = lastUserMessage.parts
-        .filter((part: any) => part.type === 'text')
-        .map((part: any) => part.text)
-        .join('')
-    } else if (lastUserMessage.content) {
-      content = lastUserMessage.content
-    }
-
-    const convertedMessages = [
-      {
-        role: 'user',
-        content: content.trim(),
-      }
-    ]
-
-    console.log('[Chat API] Sending only last user message:', convertedMessages[0])
+    console.log('[Chat API] Sending conversation history:', convertedMessages.length, 'messages')
+    console.log('[Chat API] Last user message:', lastUserMessage.content.substring(0, 100))
 
     // 💾 SAVE USER MESSAGE (without auth for testing)
-    if (conversationId && content.trim()) {
+    if (conversationId && lastUserMessage.content.trim()) {
       try {
         const supabase = await createClient()
         const { error: userMsgError } = await supabase.from('messages').insert({
           conversation_id: conversationId,
           role: 'user',
-          content: content.trim(),
+          content: lastUserMessage.content.trim(),
         })
         if (userMsgError) {
           console.error('[Chat API] Failed to save user message:', userMsgError)
