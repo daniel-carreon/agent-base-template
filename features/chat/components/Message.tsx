@@ -4,16 +4,24 @@ import { formatDistanceToNow } from 'date-fns'
 import { Bot } from 'lucide-react'
 import { CopyButton } from '@/shared/components/CopyButton'
 import { ThinkingBlock } from './ThinkingBlock'
+import { MermaidDiagram } from '@/shared/components/MermaidDiagram'
+import { parseMermaidBlocks } from '@/shared/utils/parseMermaid'
 
 interface MessageProps {
   role: 'user' | 'assistant' | 'system'
   content: string
   thinking?: string // Extended thinking content (Claude 4 models)
   timestamp?: string
+  tokensInput?: number // Input tokens used
+  tokensOutput?: number // Output tokens used
+  isStreaming?: boolean // Whether the message is currently streaming
 }
 
-export function Message({ role, content, thinking, timestamp }: MessageProps) {
+export function Message({ role, content, thinking, timestamp, tokensInput, tokensOutput, isStreaming }: MessageProps) {
   const isUser = role === 'user'
+
+  // Parse content for Mermaid diagrams
+  const contentBlocks = parseMermaidBlocks(content)
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} fade-in`}>
@@ -37,11 +45,21 @@ export function Message({ role, content, thinking, timestamp }: MessageProps) {
           </div>
         )}
 
-        {/* Extended Thinking Block - Claude 4 models only */}
+        {/* ThinkingBlock - minimalista en itálicas */}
         {!isUser && thinking && <ThinkingBlock content={thinking} />}
 
+        {/* Content with Mermaid diagram support */}
         <div className="prose prose-invert prose-sm max-w-none">
-          <p className="text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap">{content}</p>
+          {contentBlocks.map((block, index) => {
+            if (block.type === 'mermaid') {
+              return <MermaidDiagram key={index} chart={block.content} />
+            }
+            return (
+              <p key={index} className="text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap">
+                {block.content}
+              </p>
+            )
+          })}
         </div>
 
         {timestamp && (

@@ -402,6 +402,18 @@
      MOBILE OPTIMIZATIONS
      ============================================ */
 
+  /* Dynamic viewport height for iOS */
+  .mobile-viewport {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+
+  @supports (height: 100dvh) {
+    .mobile-viewport {
+      height: 100dvh;
+    }
+  }
+
   /* Mobile-first responsive utilities */
   @media (max-width: 768px) {
     /* Touch targets - minimum 44x44px for accessibility */
@@ -469,9 +481,9 @@
       @apply text-base; /* Prevent zoom on iOS */
     }
 
-    /* Responsive sidebar */
+    /* Responsive sidebar - 85% max width to leave tap space for backdrop */
     .sidebar {
-      @apply w-full;
+      @apply max-w-[85%];
     }
   }
 

@@ -18,7 +18,7 @@ export function getModelInstance(modelId: string): LanguageModel {
 
   if (!modelInfo) {
     console.warn(`Model ${modelId} not found, falling back to default`)
-    return anthropic('claude-haiku-4-5')
+    return openrouter('anthropic/claude-haiku-4.5')
   }
 
   switch (modelInfo.provider) {
@@ -36,7 +36,7 @@ export function getModelInstance(modelId: string): LanguageModel {
 
     default:
       console.warn(`Unknown provider for model ${modelId}, falling back to default`)
-      return anthropic('claude-haiku-4-5')
+      return openrouter('anthropic/claude-haiku-4.5')
   }
 }
 

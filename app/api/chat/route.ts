@@ -68,19 +68,30 @@ export async function POST(req: Request) {
     console.log('[Chat API] Sending conversation history:', convertedMessages.length, 'messages')
     console.log('[Chat API] Last user message:', lastUserMessage.content.substring(0, 100))
 
-    // 💾 SAVE USER MESSAGE (without auth for testing)
+    // 💾 SAVE USER MESSAGE
     if (conversationId && lastUserMessage.content.trim()) {
       try {
         const supabase = await createClient()
-        const { error: userMsgError } = await supabase.from('messages').insert({
-          conversation_id: conversationId,
-          role: 'user',
-          content: lastUserMessage.content.trim(),
-        })
-        if (userMsgError) {
-          console.error('[Chat API] Failed to save user message:', userMsgError)
-        } else {
-          console.log('[Chat API] User message saved')
+
+        // Get user_id from conversation (needed for RLS policy)
+        const { data: conversation } = await supabase
+          .from('conversations')
+          .select('user_id')
+          .eq('id', conversationId)
+          .single()
+
+        if (conversation) {
+          const { error: userMsgError } = await supabase.from('messages').insert({
+            conversation_id: conversationId,
+            user_id: conversation.user_id,
+            role: 'user',
+            content: lastUserMessage.content.trim(),
+          })
+          if (userMsgError) {
+            console.error('[Chat API] Failed to save user message:', userMsgError)
+          } else {
+            console.log('[Chat API] User message saved')
+          }
         }
       } catch (err) {
         console.error('[Chat API] Error saving user message:', err)
@@ -174,20 +185,31 @@ export async function POST(req: Request) {
                 if (conversationId) {
                   try {
                     const supabase = await createClient()
-                    const { error: insertError } = await supabase.from('messages').insert({
-                      conversation_id: conversationId,
-                      role: 'assistant',
-                      content: accumulatedContent,
-                      thinking: accumulatedReasoning || null,
-                      model_used: modelId,
-                      tokens_input: 0, // TODO: Extract from response
-                      tokens_output: 0, // TODO: Extract from response
-                    })
 
-                    if (insertError) {
-                      console.error('[Chat API] Failed to save message:', insertError)
-                    } else {
-                      console.log('[Chat API] Message saved with reasoning:', accumulatedReasoning.length, 'chars')
+                    // Get user_id from conversation
+                    const { data: conversation } = await supabase
+                      .from('conversations')
+                      .select('user_id')
+                      .eq('id', conversationId)
+                      .single()
+
+                    if (conversation) {
+                      const { error: insertError } = await supabase.from('messages').insert({
+                        conversation_id: conversationId,
+                        user_id: conversation.user_id,
+                        role: 'assistant',
+                        content: accumulatedContent,
+                        thinking: accumulatedReasoning || null,
+                        model_used: modelId,
+                        tokens_input: 0, // TODO: Extract from response
+                        tokens_output: 0, // TODO: Extract from response
+                      })
+
+                      if (insertError) {
+                        console.error('[Chat API] Failed to save message:', insertError)
+                      } else {
+                        console.log('[Chat API] Message saved with reasoning:', accumulatedReasoning.length, 'chars')
+                      }
                     }
                   } catch (error) {
                     console.error('[Chat API] Error saving message:', error)
@@ -249,8 +271,21 @@ export async function POST(req: Request) {
         try {
           const supabase = await createClient()
 
+          // Get user_id from conversation
+          const { data: conversation } = await supabase
+            .from('conversations')
+            .select('user_id')
+            .eq('id', conversationId)
+            .single()
+
+          if (!conversation) {
+            console.error('[Chat API] Conversation not found')
+            return
+          }
+
           const { error: insertError } = await supabase.from('messages').insert({
             conversation_id: conversationId,
+            user_id: conversation.user_id,
             role: 'assistant',
             content: text,
             model_used: modelId,

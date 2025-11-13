@@ -3,29 +3,33 @@ import type { ModelInfo } from '@/shared/types/models'
 /**
  * Available AI Models Configuration
  *
- * Models are configured with pricing, capabilities, and premium status.
+ * All models are now accessed via OpenRouter for simplified API management.
+ * OpenRouter provides unified access to 400+ models with a single API key.
+ *
  * Update this list when adding new models or when pricing changes.
+ * Pricing shown is approximate and may vary based on OpenRouter's rates.
  */
 export const AVAILABLE_MODELS: ModelInfo[] = [
   // ========================================
-  // ANTHROPIC MODELS
+  // ANTHROPIC MODELS (via OpenRouter)
   // ========================================
   {
-    id: 'claude-haiku-4-5',
+    id: 'anthropic/claude-haiku-4.5',
     name: 'Claude Haiku 4.5',
-    description: 'Rápido y eficiente para tareas generales',
-    provider: 'anthropic',
+    description: 'Rápido y eficiente con razonamiento extendido',
+    provider: 'openrouter',
     isPremium: false, // Free tier model
+    supportsThinking: true, // Extended thinking support via OpenRouter
     statusIndicator: 'enabled',
     contextWindow: 200000, // 200k tokens
     costPerMillionInput: 1,
     costPerMillionOutput: 5,
   },
   {
-    id: 'claude-sonnet-4',
+    id: 'anthropic/claude-sonnet-4',
     name: 'Claude Sonnet 4',
     description: 'Balance perfecto entre velocidad y capacidad',
-    provider: 'anthropic',
+    provider: 'openrouter',
     isPremium: true,
     supportsThinking: true, // Extended thinking support
     statusIndicator: 'enabled',
@@ -34,10 +38,10 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     costPerMillionOutput: 15,
   },
   {
-    id: 'claude-opus-4',
+    id: 'anthropic/claude-opus-4',
     name: 'Claude Opus 4',
     description: 'Máxima capacidad para tareas complejas',
-    provider: 'anthropic',
+    provider: 'openrouter',
     isPremium: true,
     supportsThinking: true, // Extended thinking support
     statusIndicator: 'enabled',
@@ -47,13 +51,13 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
   },
 
   // ========================================
-  // OPENAI MODELS
+  // OPENAI MODELS (via OpenRouter)
   // ========================================
   {
-    id: 'gpt-4o',
+    id: 'openai/gpt-4o',
     name: 'GPT-4o',
     description: 'Modelo multimodal de alta capacidad',
-    provider: 'openai',
+    provider: 'openrouter',
     isPremium: true,
     statusIndicator: 'enabled',
     contextWindow: 128000,
@@ -61,10 +65,10 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     costPerMillionOutput: 10,
   },
   {
-    id: 'gpt-4o-mini',
+    id: 'openai/gpt-4o-mini',
     name: 'GPT-4o Mini',
     description: 'Versión optimizada y económica de GPT-4o',
-    provider: 'openai',
+    provider: 'openrouter',
     isPremium: false,
     statusIndicator: 'enabled',
     contextWindow: 128000,
@@ -73,13 +77,13 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
   },
 
   // ========================================
-  // GOOGLE MODELS
+  // GOOGLE MODELS (via OpenRouter)
   // ========================================
   {
-    id: 'gemini-2.5-pro',
+    id: 'google/gemini-2.5-pro',
     name: 'Gemini 2.5 Pro',
     description: 'Modelo avanzado de Google para razonamiento',
-    provider: 'google',
+    provider: 'openrouter',
     isPremium: true,
     statusIndicator: 'enabled',
     contextWindow: 1000000, // 1M tokens
@@ -90,8 +94,9 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
 
 /**
  * Default model configuration
+ * Updated to use OpenRouter format
  */
-export const DEFAULT_MODEL_ID = 'claude-haiku-4-5'
+export const DEFAULT_MODEL_ID = 'anthropic/claude-haiku-4.5'
 
 /**
  * Get model info by ID

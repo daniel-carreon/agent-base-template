@@ -41,7 +41,7 @@ export function ChatInput({ input, isLoading, onInputChange, onSubmit }: ChatInp
           onChange={onInputChange}
           onKeyDown={handleKeyDown}
           className="input-glass flex-1 min-h-[56px] max-h-[200px]"
-          placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
+          placeholder="Type your message..."
           rows={1}
         />
 
@@ -63,12 +63,11 @@ export function ChatInput({ input, isLoading, onInputChange, onSubmit }: ChatInp
       {/* Model Selector - Below Input */}
       <div className="max-w-4xl mx-auto mt-3 flex items-center justify-between">
         <ModelSelector />
-        <div className="flex items-center gap-4 text-xs text-white/30">
-          <span>Press Enter to send, Shift+Enter for new line</span>
-          {input && input.length > 0 && (
-            <span>{input.length} characters</span>
-          )}
-        </div>
+        {input && input.length > 0 && (
+          <div className="text-xs text-white/30">
+            {input.length} characters
+          </div>
+        )}
       </div>
     </form>
   )

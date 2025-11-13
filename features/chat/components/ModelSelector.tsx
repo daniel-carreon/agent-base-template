@@ -88,7 +88,7 @@ export function ModelSelector({ onModelChange, className = '' }: ModelSelectorPr
         />
 
         {/* Model Name */}
-        <span className="font-medium text-[var(--text-primary)] flex-1 text-left text-sm">
+        <span className="font-medium text-[var(--text-primary)] flex-1 text-left text-sm truncate">
           {selectedModel.name}
         </span>
 
@@ -147,8 +147,8 @@ export function ModelSelector({ onModelChange, className = '' }: ModelSelectorPr
               </div>
             </div>
           ) : (
-            /* Desktop: Popover */
-            <div className="absolute top-full mt-2 left-0 w-[320px] glass-strong rounded-xl overflow-hidden z-[9999] shadow-2xl animate-fade-in">
+            /* Desktop: Popover - Opens upward to prevent overflow */
+            <div className="absolute bottom-full mb-2 left-0 w-[320px] glass-strong rounded-xl overflow-hidden z-[9999] shadow-2xl animate-fade-in">
               <div className="p-2 max-h-[400px] overflow-y-auto space-y-1">
                 {AVAILABLE_MODELS.map((model) => (
                   <ModelOption
