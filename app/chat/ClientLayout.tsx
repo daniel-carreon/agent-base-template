@@ -14,14 +14,19 @@ function ClientLayoutContent({ children, userEmail, activeConversationId }: Clie
   const { isOpen } = useSidebar()
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar with smooth transitions */}
+    <div className="flex mobile-viewport">
+      {/* Sidebar - Fixed overlay en móvil, relative en desktop */}
       <aside
-        className={`sidebar transition-all duration-300 ease-in-out ${
-          isOpen ? 'w-80 translate-x-0' : 'w-0 -translate-x-full lg:translate-x-0 lg:w-0'
-        } overflow-hidden`}
+        className={`
+          sidebar z-50 transition-all duration-300 ease-in-out
+          fixed top-0 left-0 h-full
+          lg:relative lg:top-auto lg:left-auto
+          ${isOpen ? 'w-80 translate-x-0' : 'w-0 -translate-x-full'}
+          ${!isOpen ? 'lg:translate-x-0 lg:w-0' : 'lg:translate-x-0'}
+          overflow-hidden
+        `}
       >
-        <div className="w-80 h-full">
+        <div className="w-80 h-full overflow-x-hidden">
           <ConversationList activeConversationId={activeConversationId} userEmail={userEmail} />
         </div>
       </aside>

@@ -248,13 +248,14 @@ export function ConversationList({ activeConversationId, userEmail }: Conversati
         </button>
       </div>
 
-      {/* Batch Actions Bar */}
+      {/* Batch Actions Bar - Responsive Layout */}
       {selectedIds.size > 0 && (
-        <div className="p-4 border-b border-white/10 glass-strong">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="text-[var(--text-secondary)] text-sm font-medium">
-                {selectedIds.size} seleccionadas
+        <div className="px-4 py-3 border-b border-white/10 glass-strong space-y-2">
+          {/* Row 1: Count + Quick Actions */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="text-[var(--text-secondary)] text-sm font-medium whitespace-nowrap">
+                {selectedIds.size} sel.
               </span>
               <button
                 onClick={handleSelectAll}
@@ -262,6 +263,7 @@ export function ConversationList({ activeConversationId, userEmail }: Conversati
               >
                 Todas
               </button>
+              <span className="text-[var(--text-disabled)]">•</span>
               <button
                 onClick={handleDeselectAll}
                 className="text-xs text-[var(--text-muted)] hover:underline"
@@ -270,29 +272,35 @@ export function ConversationList({ activeConversationId, userEmail }: Conversati
               </button>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleDeselectAll}
-                className="btn-icon"
-                title="Cancelar"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <button
-                onClick={handleBatchDelete}
-                disabled={isBatchDeleting}
-                className="glass-hover px-3 py-2 rounded-lg flex items-center gap-2 border border-red-500/30 hover:border-red-500/50 transition-colors"
-                title="Eliminar seleccionadas"
-              >
-                {isBatchDeleting ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <Trash2 className="w-4 h-4 text-red-400" />
-                )}
-                <span className="text-sm text-red-400">Eliminar</span>
-              </button>
-            </div>
+            {/* Cancel Button - Always visible */}
+            <button
+              onClick={handleDeselectAll}
+              className="btn-icon flex-shrink-0"
+              title="Cancelar selección"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
+
+          {/* Row 2: Delete Button - Full width */}
+          <button
+            onClick={handleBatchDelete}
+            disabled={isBatchDeleting}
+            className="w-full glass-hover px-3 py-2 rounded-lg flex items-center justify-center gap-2 border border-red-500/30 hover:border-red-500/50 transition-colors"
+            title="Eliminar conversaciones seleccionadas"
+          >
+            {isBatchDeleting ? (
+              <>
+                <Spinner size="sm" />
+                <span className="text-sm text-red-400">Eliminando...</span>
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-4 h-4 text-red-400" />
+                <span className="text-sm text-red-400">Eliminar ({selectedIds.size})</span>
+              </>
+            )}
+          </button>
         </div>
       )}
 
@@ -504,8 +512,11 @@ export function ConversationList({ activeConversationId, userEmail }: Conversati
         )}
       </div>
 
-      {/* Bottom Controls: User Menu (left) & Theme Toggle (right) */}
-      <div className="border-t border-white/10 px-5 py-4 flex items-center justify-between flex-shrink-0">
+      {/* Bottom Controls: User Menu (left) & Theme Toggle (right)
+          🎯 SPACING: flex items-center justify-between + gap-3
+          Previene que botones se corten en viewports medianos
+          Ref: arbrain/LeftSidebarMenu.tsx:420-423 */}
+      <div className="border-t border-white/10 px-5 py-4 flex items-center justify-between flex-shrink-0 gap-3">
         {/* User Menu - Bottom Left */}
         <UserMenu userEmail={userEmail} />
 
