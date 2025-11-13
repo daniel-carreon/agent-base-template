@@ -3,10 +3,10 @@
 import { useEffect, useRef } from 'react'
 import { Message } from './Message'
 import { TypingIndicator } from '@/shared/components/TypingIndicator'
-import type { UIMessage as MessageType } from '@ai-sdk/react'
+import type { CustomMessage } from '../hooks/useCustomChat'
 
 interface MessageListProps {
-  messages: MessageType[]
+  messages: CustomMessage[]
   isLoading: boolean
 }
 
@@ -39,31 +39,27 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
   return (
     <div className="flex-1 overflow-y-auto p-6 space-y-6">
       {messages.map((message, index) => {
-          // Extract thinking from experimental_providerMetadata (Anthropic extended thinking)
-          const thinking = (message as any).experimental_providerMetadata?.anthropic?.thinking
+        // Determine if this message is currently streaming
+        const isLastMessage = index === messages.length - 1
+        const isAssistant = message.role === 'assistant'
+        const isMessageStreaming = isLoading && isLastMessage && isAssistant
 
-          // AI SDK 5.0: Extract content from parts array
-          let content = ''
-          if ((message as any).parts && Array.isArray((message as any).parts)) {
-            content = (message as any).parts
-              .filter((part: any) => part.type === 'text')
-              .map((part: any) => part.text)
-              .join('')
-          } else if ((message as any).content) {
-            // Fallback for old format
-            content = (message as any).content
-          }
+        // 🔍 DEBUG: Log reasoning content when available
+        if (isAssistant && message.thinking && isLastMessage) {
+          console.log('[MessageList] Reasoning detected:', message.thinking.substring(0, 100))
+        }
 
-          return (
-            <Message
-              key={message.id || index}
-              role={message.role as 'user' | 'assistant' | 'system'}
-              content={content}
-              thinking={thinking}
-              timestamp={(message as any).createdAt?.toISOString()}
-            />
-          )
-        })}
+        return (
+          <Message
+            key={message.id || index}
+            role={message.role}
+            content={message.content}
+            thinking={message.thinking}
+            timestamp={message.timestamp.toISOString()}
+            isStreaming={isMessageStreaming}
+          />
+        )
+      })}
 
       {isLoading && <TypingIndicator />}
 

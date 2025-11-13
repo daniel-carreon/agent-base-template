@@ -1,16 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useChat } from '@ai-sdk/react'
 import { MessageList } from './MessageList'
 import { ChatInput } from './ChatInput'
-import { createMessage } from '@/features/conversations/services/conversationService'
 import { DEFAULT_MODEL_ID } from '@/config/models'
-import type { UIMessage as AIMessage } from '@ai-sdk/react'
+import { useCustomChat } from '../hooks/useCustomChat'
+import type { CustomMessage } from '../hooks/useCustomChat'
 
 interface ChatInterfaceProps {
   conversationId: string
-  initialMessages?: AIMessage[]
+  initialMessages?: CustomMessage[]
 }
 
 export function ChatInterface({ conversationId, initialMessages = [] }: ChatInterfaceProps) {
@@ -25,41 +24,30 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
     }
   }, [])
 
-  // AI SDK 5.0 modern pattern - no more handleInputChange from hook
-  const {
-    messages,
-    sendMessage,
-    status,
-    error,
-  } = useChat({
-    api: '/api/chat',
-    body: {
-      conversationId,
-      modelId: selectedModelId,
-    },
-    initialMessages,
-  })
+  // Use custom chat hook that supports reasoning extraction
+  const { messages, sendMessage, isStreaming, error, setMessages } = useCustomChat()
 
-  const isLoading = status === 'streaming' || status === 'submitted'
+  // Set initial messages after hook initialization
+  useEffect(() => {
+    if (initialMessages && initialMessages.length > 0) {
+      setMessages(initialMessages)
+    }
+  }, [initialMessages, setMessages])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!input?.trim() || isLoading) return
+    if (!input?.trim() || isStreaming) return
 
     const userMessage = input.trim()
     setInput('') // Clear input immediately
 
     try {
-      // TEMPORARILY DISABLED FOR TESTING - Save user message to Supabase first
-      // await createMessage({
-      //   conversation_id: conversationId,
-      //   role: 'user',
-      //   content: userMessage,
-      // })
-
-      // Send to AI using new sendMessage API (AI SDK 5.0)
-      sendMessage({ text: userMessage })
+      // Send message with custom hook
+      await sendMessage(userMessage, {
+        conversationId,
+        modelId: selectedModelId,
+      })
     } catch (error) {
       console.error('Error submitting message:', error)
       setInput(userMessage) // Restore input on error
@@ -80,11 +68,11 @@ export function ChatInterface({ conversationId, initialMessages = [] }: ChatInte
         </div>
       )}
 
-      <MessageList messages={messages} isLoading={isLoading} />
+      <MessageList messages={messages} isLoading={isStreaming} />
 
       <ChatInput
         input={input}
-        isLoading={isLoading}
+        isLoading={isStreaming}
         onInputChange={handleInputChange}
         onSubmit={handleSubmit}
       />

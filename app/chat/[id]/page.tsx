@@ -1,54 +1,67 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/shared/lib/supabase/server'
 import { ChatInterface } from '@/features/chat/components/ChatInterface'
-import type { UIMessage as AIMessage } from '@ai-sdk/react'
+import type { CustomMessage } from '@/features/chat/hooks/useCustomChat'
 
 interface ChatPageProps {
   params: Promise<{ id: string }>
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-  const { id } = await params
-  const supabase = await createClient()
+  try {
+    const { id } = await params
+    const supabase = await createClient()
 
-  // Auth check - TEMPORARILY DISABLED FOR TESTING
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    // Auth check - TEMPORARILY DISABLED FOR TESTING
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  // if (!user) {
-  //   redirect('/login')
-  // }
+    // if (!user) {
+    //   redirect('/login')
+    // }
 
-  // Mock user for testing
-  const testUser = user || { id: 'test-user-id' }
+    // Mock user for testing
+    const testUser = user || { id: 'test-user-id' }
 
-  // Get conversation and verify ownership - DISABLED FOR TESTING
-  // const { data: conversation } = await supabase
-  //   .from('conversations')
-  //   .select('*')
-  //   .eq('id', id)
-  //   .single()
+    // Get conversation and verify ownership - DISABLED FOR TESTING
+    // const { data: conversation } = await supabase
+    //   .from('conversations')
+    //   .select('*')
+    //   .eq('id', id)
+    //   .single()
 
-  // if (!conversation || conversation.user_id !== testUser.id) {
-  //   redirect('/chat')
-  // }
+    // if (!conversation || conversation.user_id !== testUser.id) {
+    //   redirect('/chat')
+    // }
 
-  // Get messages for this conversation
-  const { data: messages } = await supabase
-    .from('messages')
-    .select('*')
-    .eq('conversation_id', id)
-    .order('timestamp', { ascending: true })
+    // Get messages for this conversation (with error handling)
+    const { data: messages, error: messagesError } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', id)
+      .order('timestamp', { ascending: true })
 
-  // Convert to AI SDK message format
-  const initialMessages =
-    messages?.map((msg) => ({
-      id: msg.id,
-      role: msg.role as 'user' | 'assistant' | 'system',
-      content: msg.content,
-      createdAt: new Date(msg.timestamp),
-    })) || []
+    // Log error but don't fail - new conversations have no messages
+    if (messagesError) {
+      console.error('Error loading messages:', messagesError)
+    }
 
-  return <ChatInterface conversationId={id} initialMessages={initialMessages as any} />
+    // Convert to CustomMessage format (includes thinking field)
+    const initialMessages: CustomMessage[] =
+      messages?.map((msg) => ({
+        id: msg.id,
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content || '',
+        thinking: msg.thinking || undefined,
+        timestamp: new Date(msg.timestamp),
+      })) || []
+
+    return <ChatInterface conversationId={id} initialMessages={initialMessages} />
+  } catch (error) {
+    console.error('Error in ChatPage:', error)
+    // Fallback: Return empty chat interface
+    const { id } = await params
+    return <ChatInterface conversationId={id} initialMessages={[]} />
+  }
 }
